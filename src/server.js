@@ -6,9 +6,11 @@ import compression from "compression";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 // import { dbConnect } from "./config/config.js";
+import authRoutes from "./routes/authRoutes.js";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
 const PORT = process.env.PORT;
- 
+
 // Initial express app
 const app = express();
 
@@ -26,9 +28,11 @@ app.use(bodyParser.json());
 // dbConnect();
 
 // Define routes
-app.get("/", (req, res) => {
-  res.send("Express + TypeScript Server is running by nodemon.");
-});
+app.use("/api/auth", authRoutes);
+
+// Error Middlewares
+app.use(notFound);
+app.use(errorHandler);
 
 // Create server
 const server = http.createServer(app);
