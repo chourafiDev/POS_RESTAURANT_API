@@ -1,0 +1,42 @@
+# Directories
+node_modules/
+dist/
+
+# Files
+.env
+.env.local
+.env.*.local
+
+# Log files
+logs/
+
+# macOS
+.DS_Store
+
+# Editor-specific
+.vscode/
+.idea/
+
+# Testing frameworks
+/coverage/
+/.nyc_output/
+
+# Build files
+/build/
+/out/
+
+# Dependency lock files
+/yarn.lock
+/package-lock.json
+
+# Runtime data
+/pid
+/*.pid
+
+# OS generated files
+Thumbs.db
+
+# Crash logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
