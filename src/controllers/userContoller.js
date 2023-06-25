@@ -6,7 +6,7 @@ import generateToken from "../utils/generateToken.js";
 // @route POST api/users/create-user
 // @access Privet
 const createUser = asyncHandler(async (req, res) => {
-  const { firstName, lastName, email, address, phone, image, password } =
+  const { firstName, lastName, email, address, phone, image, role, password } =
     req.body;
 
   // Check if user already exists
@@ -25,6 +25,7 @@ const createUser = asyncHandler(async (req, res) => {
     address,
     phone,
     image,
+    role,
     password,
   });
 
@@ -44,6 +45,15 @@ const createUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error(`Invalide user data`);
   }
+});
+
+// @desc Get user profile
+// @route POST api/users/profile
+// @access Privet
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select("-password");
+
+  res.status(200).json(users);
 });
 
 // @desc Get user profile
@@ -90,4 +100,4 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   });
 });
 
-export { createUser, getUserProfile, updateUserProfile };
+export { createUser, getUserProfile, updateUserProfile, getAllUsers };
