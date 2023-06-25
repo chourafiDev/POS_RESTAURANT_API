@@ -15,15 +15,13 @@ const login = asyncHandler(async (req, res) => {
     generateToken(res, user._id);
 
     res.status(201).json({
-      message: "Logged in successfuly",
-      data: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        image: user.image,
-      },
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
     });
   } else {
-    res.status(400);
+    res.status(401);
     throw new Error(`Invalide email or password`);
   }
 });
