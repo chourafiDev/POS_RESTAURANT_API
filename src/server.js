@@ -5,13 +5,16 @@ import cors from "cors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-// import { dbConnect } from "./config/config.js";
-import authRoutes from "./routes/authRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import connectDB from "./config/config.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
-const PORT = process.env.PORT;
+// Connect to mongoDb
+connectDB();
 
 // Initial express app
+const PORT = process.env.PORT;
 const app = express();
 
 // Initial Middlewares
@@ -24,11 +27,9 @@ app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-// Connect to mongoDb
-// dbConnect();
-
 // Define routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 // Error Middlewares
 app.use(notFound);
