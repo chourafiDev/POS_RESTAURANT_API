@@ -10,6 +10,22 @@ import connectDB from "./config/config.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
+// Cors options
+const corsOptions = {
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "X-Access-Token",
+    "Authorization",
+  ],
+  credentials: true, // this allows to send back (to client) cookies
+  methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+  origin: ["http://localhost:3000", "http://localhost:3001"],
+  preflightContinue: false,
+};
+
 // Connect to mongoDb
 connectDB();
 
@@ -18,13 +34,9 @@ const PORT = process.env.PORT;
 const app = express();
 
 // Initial Middlewares
-app.use(
-  cors({
-    credentials: true,
-  })
-);
 app.use(compression());
 app.use(cookieParser());
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // Define routes
