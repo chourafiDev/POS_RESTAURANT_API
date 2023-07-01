@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
-import generateToken from "../utils/generateToken.js";
+import cloudinary from "../utils/cloudinary.js";
 
 // @desc Create New User
 // @route POST api/users/create-user
@@ -17,6 +17,16 @@ const createUser = asyncHandler(async (req, res) => {
     throw new Error(`User with this email (${email}) already exists`);
   }
 
+  // Upload image to cloudinary
+  const result = await cloudinary.uploader.upload(image, {
+    folder: "reservation_app/pos",
+  });
+  conso.log("result", result);
+  image = {
+    public_id: result.public_id,
+    url: result.secure_url,
+  };
+
   // Create new user
   const newUser = await User.create({
     firstName,
@@ -30,16 +40,8 @@ const createUser = asyncHandler(async (req, res) => {
   });
 
   if (newUser) {
-    // generateToken(res, newUser._id);
-
     res.status(201).json({
       message: "User created successfuly",
-      //   data: {
-      //     firstName: newUser.firstName,
-      //     firstName: newUser.firstName,
-      //     lastName: newUser.lastName,
-      //     image: newUser.image,
-      //   },
     });
   } else {
     res.status(400);
