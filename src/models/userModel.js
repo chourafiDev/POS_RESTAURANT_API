@@ -5,38 +5,47 @@ const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      require: true,
+      required: [true, "First name is required"],
     },
     lastName: {
       type: String,
-      require: true,
+      required: [true, "Last name is required"],
     },
     email: {
       type: String,
-      require: true,
+      required: [true, "Email name is required"],
       unique: true,
     },
     address: {
       type: String,
-      require: true,
+      required: [true, "Address is required"],
     },
     phone: {
       type: String,
-      require: true,
+      required: [true, "Phone is required"],
       unique: true,
     },
     image: {
-      type: String,
-      require: true,
+      public_id: {
+        type: String,
+        // require: true,
+      },
+      url: {
+        type: String,
+        // require: true,
+      },
     },
     role: {
       type: String,
-      require: true,
-      enum: ["Admin", "Cashier"],
+      required: [true, "Role is required"],
+      enum: {
+        values: ["Admin", "Cashier"],
+        massage: "Please select the correct role",
+      },
     },
     password: {
       type: String,
-      require: true,
+      required: [true, "Password is required"],
     },
   },
   { timestamps: true }
