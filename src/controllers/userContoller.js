@@ -19,7 +19,7 @@ const createUser = asyncHandler(async (req, res) => {
 
   // Upload image to cloudinary
   const result = await cloudinary.uploader.upload(image, {
-    folder: "reservation_app/pos",
+    folder: "pos_app/menu",
   });
   conso.log("result", result);
   image = {
