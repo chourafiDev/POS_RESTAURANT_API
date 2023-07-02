@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Role is required"],
       enum: {
-        values: ["Admin", "Cashier"],
+        values: ["admin", "cashier"],
         massage: "Please select the correct role",
       },
     },
