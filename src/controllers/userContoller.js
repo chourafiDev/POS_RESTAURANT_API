@@ -6,7 +6,7 @@ import cloudinary from "../utils/cloudinary.js";
 // @route POST api/users/create-user
 // @access Privet
 const createUser = asyncHandler(async (req, res) => {
-  const { firstName, lastName, email, address, phone, image, role, password } =
+  let { firstName, lastName, email, address, phone, image, role, password } =
     req.body;
 
   // Check if user already exists
@@ -21,7 +21,7 @@ const createUser = asyncHandler(async (req, res) => {
   const result = await cloudinary.uploader.upload(image, {
     folder: "pos_app/menu",
   });
-  conso.log("result", result);
+
   image = {
     public_id: result.public_id,
     url: result.secure_url,
