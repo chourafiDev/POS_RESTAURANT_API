@@ -1,4 +1,4 @@
-import ErrorHandler from "../utils/ErrorHandler";
+import ErrorHandler from "../utils/ErrorHandler.js";
 
 const notFound = (req, res, next) => {
   const err = new Error(`Not Found - ${req.originalUrl}`);
@@ -26,7 +26,7 @@ const errorHandler = (err, req, res, next) => {
 
   //Handling Mongoose Validation Error
   if (err.code === 11000) {
-    const message = `Certaines valeurs ne peuvent pas être dupliquées`;
+    const message = `Some values cannot be duplicated`;
     error = new ErrorHandler(message, 400);
   }
 
@@ -37,7 +37,5 @@ const errorHandler = (err, req, res, next) => {
     stack: error.stack,
   });
 };
-
-export default onError;
 
 export { notFound, errorHandler };
