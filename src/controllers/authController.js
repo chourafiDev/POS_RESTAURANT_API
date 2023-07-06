@@ -1,11 +1,12 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
 
 // @desc Create New User user/set token
 // @route POST api/auth/login
 // @access Public
-const login = asyncHandler(async (req, res) => {
+const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
   // Check if user already exists
@@ -20,8 +21,7 @@ const login = asyncHandler(async (req, res) => {
       role: user.role,
     });
   } else {
-    res.status(401);
-    throw new Error(`Invalide email or password`);
+    return next(new ErrorHandler("Invalide email or password", 401));
   }
 });
 
