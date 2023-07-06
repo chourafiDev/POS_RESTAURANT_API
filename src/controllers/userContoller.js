@@ -1,11 +1,13 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import cloudinary from "../utils/cloudinary.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
+import History from "../models/historyModel.js";
 
 // @desc Create New User
 // @route POST api/users/create-user
 // @access Privet
-const createUser = asyncHandler(async (req, res) => {
+const createUser = asyncHandler(async (req, res, next) => {
   let { firstName, lastName, email, address, phone, image, role, password } =
     req.body;
 
@@ -13,19 +15,22 @@ const createUser = asyncHandler(async (req, res) => {
   const userExist = await User.findOne({ email });
 
   if (userExist) {
-    res.status(400);
-    throw new Error(`User with this email (${email}) already exists`);
+    return next(
+      new ErrorHandler(`User with this email (${email}) already exists`, 404)
+    );
   }
 
   // Upload image to cloudinary
-  const result = await cloudinary.uploader.upload(image, {
-    folder: "pos_app/menu",
-  });
+  if (image) {
+    const result = await cloudinary.uploader.upload(image, {
+      folder: "pos_app/avatars",
+    });
 
-  image = {
-    public_id: result.public_id,
-    url: result.secure_url,
-  };
+    image = {
+      public_id: result.public_id,
+      url: result.secure_url,
+    };
+  }
 
   // Create new user
   const newUser = await User.create({
@@ -44,13 +49,12 @@ const createUser = asyncHandler(async (req, res) => {
       message: "User created successfuly",
     });
   } else {
-    res.status(400);
-    throw new Error(`Invalide user data`);
+    return next(new ErrorHandler(`Invalide user data`, 400));
   }
 });
 
-// @desc Get user profile
-// @route POST api/users/profile
+// @desc Get all users
+// @route GET api/users
 // @access Privet
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select("-password");
@@ -59,7 +63,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 });
 
 // @desc Get user profile
-// @route POST api/users/profile
+// @route GET api/users/profile
 // @access Privet
 const getUserProfile = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -68,10 +72,10 @@ const getUserProfile = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 });
 
-// @desc Get user profile
-// @route POST api/users/profile
+// @desc Update user
+// @route PUT api/users/{userId}
 // @access Privet
-const updateUserProfile = asyncHandler(async (req, res) => {
+const updateUserProfile = asyncHandler(async (req, res, next) => {
   const { _id } = req.user;
   const { firstName, lastName, email, address, phone, image, password } =
     req.body;
@@ -93,8 +97,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
     res.status(200).json({ message: "User Updated Successfuly" });
   } else {
-    res.status(404);
-    throw new Error("User not found");
+    return next(new ErrorHandler(`User not found`, 404));
   }
 
   res.status(200).json({
@@ -102,4 +105,44 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   });
 });
 
-export { createUser, getUserProfile, updateUserProfile, getAllUsers };
+// @desc Delete user
+// @route DELETE api/users/{userId}
+// @access Privet
+const deleteUser = asyncHandler(async (req, res, next) => {
+  // Check user if exists
+  const userId = req.params.id;
+  const user = await User.findOne({ _id: { $eq: userId } });
+  console.log(req.user);
+  if (!user) {
+    return next(new ErrorHandler("User not found with this id", 404));
+  }
+
+  //Remove user photo
+  const imageId = user.image.public_id;
+  if (imageId) {
+    await cloudinary.uploader.destroy(imageId);
+  }
+
+  // Delete user
+  await User.findByIdAndRemove(userId);
+
+  //History delete user
+  await History.create({
+    action: "Deletion",
+    description: `Delete user (${user.firstName} ${user.lastName})`,
+    user: req.user._id,
+  });
+
+  res.status(200).json({
+    success: true,
+    messageSuccess: "User deleted successfuly",
+  });
+});
+
+export {
+  createUser,
+  getUserProfile,
+  updateUserProfile,
+  getAllUsers,
+  deleteUser,
+};
