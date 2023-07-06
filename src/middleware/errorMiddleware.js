@@ -1,3 +1,5 @@
+import ErrorHandler from "../utils/ErrorHandler";
+
 const notFound = (req, res, next) => {
   const err = new Error(`Not Found - ${req.originalUrl}`);
   res.status(404);
@@ -5,18 +7,37 @@ const notFound = (req, res, next) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  let message = err.message;
+  err.statusCode = err.statusCode || 500;
 
+  let error = { ...err };
+  error.message = err.message;
+
+  //Wrong Mongoose Object ID Error
   if (err.name === "CastError" && err.kind === "ObjectId") {
-    statusCode = 404;
-    message = "Resource not found";
+    const message = `Resource not found. Invalide: ${err.path}`;
+    error = new ErrorHandler(message, 400);
   }
 
-  res.status(statusCode).json({
-    message,
-    stack: process.env.NODE_ENV === "production" ? null : err.stack,
+  //Handling Mongoose Validation Error
+  if (err.name === "ValidationError") {
+    const message = Object.values(err.errors).map((value) => value.message);
+    error = new ErrorHandler(message, 400);
+  }
+
+  //Handling Mongoose Validation Error
+  if (err.code === 11000) {
+    const message = `Certaines valeurs ne peuvent pas être dupliquées`;
+    error = new ErrorHandler(message, 400);
+  }
+
+  res.status(err.statusCode).json({
+    success: false,
+    error,
+    message: error.message,
+    stack: error.stack,
   });
 };
+
+export default onError;
 
 export { notFound, errorHandler };
