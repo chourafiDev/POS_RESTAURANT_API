@@ -62,26 +62,24 @@ const getAllUsers = asyncHandler(async (req, res) => {
   res.status(200).json(users);
 });
 
-// @desc Get user profile
-// @route GET api/users/profile
+// @desc Get user by id
+// @route GET api/users/:id
 // @access Privet
-const getUserProfile = asyncHandler(async (req, res) => {
-  const { _id } = req.user;
-  const user = await User.findById(_id).select("-password");
+const getUserById = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  const user = await User.findById(userId).select("-password");
 
   res.status(200).json(user);
 });
 
 // @desc Update user
-// @route PUT api/users/{userId}
+// @route PUT api/users/:id
 // @access Privet
-const updateUserProfile = asyncHandler(async (req, res, next) => {
-  const { _id } = req.user;
-  const { firstName, lastName, email, address, phone, image, password } =
-    req.body;
+const updateUser = asyncHandler(async (req, res, next) => {
+  const userId = req.params.id;
+  const { firstName, lastName, email, address, phone, image } = req.body;
 
-  const user = await User.findById(_id);
-
+  const user = await User.findById(userId);
   if (user) {
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
@@ -89,8 +87,24 @@ const updateUserProfile = asyncHandler(async (req, res, next) => {
     user.address = address || user.address;
     user.phone = phone || user.phone;
 
-    if (password) {
-      user.password = password;
+    //Update user image
+    if (image !== null) {
+      const image_id = user.image.public_id;
+
+      if (image_id) {
+        //Delete previous image
+        await cloudinary.uploader.destroy(image_id);
+      }
+
+      //add new image
+      const result = await cloudinary.uploader.upload(image, {
+        folder: "pos_app/avatars",
+      });
+
+      user.image = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
     }
 
     await user.save();
@@ -106,7 +120,7 @@ const updateUserProfile = asyncHandler(async (req, res, next) => {
 });
 
 // @desc Delete user
-// @route DELETE api/users/{userId}
+// @route DELETE api/users/:id
 // @access Privet
 const deleteUser = asyncHandler(async (req, res, next) => {
   // Check user if exists
@@ -139,10 +153,4 @@ const deleteUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-export {
-  createUser,
-  getUserProfile,
-  updateUserProfile,
-  getAllUsers,
-  deleteUser,
-};
+export { createUser, updateUser, getAllUsers, deleteUser, getUserById };
