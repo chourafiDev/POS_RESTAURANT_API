@@ -39,4 +39,14 @@ const logout = asyncHandler(async (req, res) => {
   });
 });
 
-export { login, logout };
+// @desc Get user profile
+// @route GET api/users/profile
+// @access Privet
+const getUserProfile = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const user = await User.findById(_id).select("-password");
+
+  res.status(200).json(user);
+});
+
+export { login, logout, getUserProfile };
