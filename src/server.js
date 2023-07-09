@@ -9,6 +9,7 @@ import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/config.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 // Cors options
 const corsOptions = {
@@ -43,6 +44,7 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 // Define routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/categories", categoryRoutes);
 
 // Error Middlewares
 app.use(notFound);
