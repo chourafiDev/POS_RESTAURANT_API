@@ -113,10 +113,6 @@ const updateUser = asyncHandler(async (req, res, next) => {
   } else {
     return next(new ErrorHandler(`User not found`, 404));
   }
-
-  res.status(200).json({
-    message: "Update profile",
-  });
 });
 
 // @desc Delete user
