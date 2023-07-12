@@ -8,7 +8,7 @@ import History from "../models/historyModel.js";
 // @route POST api/categories
 // @access Privet
 const createCategory = asyncHandler(async (req, res, next) => {
-  let { name, icon } = req.body;
+  let { name, icon, description } = req.body;
 
   // Check if Category already exists
   const CategoryExist = await Category.findOne({ name });
@@ -35,6 +35,7 @@ const createCategory = asyncHandler(async (req, res, next) => {
   const newCategory = await Category.create({
     name,
     icon,
+    description,
   });
 
   if (newCategory) {
@@ -70,15 +71,16 @@ const getCategorieById = asyncHandler(async (req, res) => {
 // @access Privet
 const updateCategorie = asyncHandler(async (req, res, next) => {
   const categorieId = req.params.id;
-  const { name, icon } = req.body;
+  const { name, icon, description } = req.body;
 
   const categorie = await Category.findById(categorieId);
 
   if (categorie) {
     categorie.name = name || categorie.name;
+    categorie.description = description || categorie.description;
 
     //Update categorie icon
-    if (icon !== null) {
+    if (icon) {
       const icon_id = categorie.icon.public_id;
 
       if (icon_id) {
@@ -124,7 +126,7 @@ const deleteCategorie = asyncHandler(async (req, res, next) => {
   }
 
   // Delete categorie
-  await categorie.findByIdAndRemove(categorieId);
+  await Category.findByIdAndRemove(categorieId);
 
   //History delete categorie
   await History.create({
