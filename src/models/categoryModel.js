@@ -7,6 +7,10 @@ const categorySchema = new mongoose.Schema(
       required: [true, "Name is required"],
       unique: true,
     },
+    description: {
+      type: String,
+      default: null,
+    },
     icon: {
       public_id: {
         type: String,
