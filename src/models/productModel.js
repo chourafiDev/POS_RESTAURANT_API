@@ -23,7 +23,7 @@ const productSchema = new mongoose.Schema(
     },
     options: {
       type: [String],
-      required: [true, "Options is required"],
+      default: null,
     },
     image: {
       public_id: {
