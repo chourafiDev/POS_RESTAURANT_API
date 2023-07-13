@@ -74,15 +74,15 @@ const updateProduct = asyncHandler(async (req, res, next) => {
 
   const product = await Product.findById(productId);
   if (product) {
-    user.title = title || product.title;
-    user.price = price || product.price;
-    user.description = description || product.description;
-    user.category = categoryId || product.category;
-    user.options = options || product.options;
+    product.title = title || product.title;
+    product.price = price || product.price;
+    product.description = description || product.description;
+    product.category = categoryId || product.category;
+    product.options = options || product.options;
 
     //Update product image
     if (image !== null) {
-      const image_id = user.image.public_id;
+      const image_id = product.image.public_id;
 
       if (image_id) {
         //Delete previous image
