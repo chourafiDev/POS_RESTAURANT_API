@@ -25,7 +25,11 @@ const corsOptions = {
   ],
   credentials: true, // this allows to send back (to client) cookies
   methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
-  origin: ["http://localhost:3000", "http://localhost:3001"],
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://pos-restaurant-ui.vercel.app",
+  ],
   preflightContinue: false,
 };
 
