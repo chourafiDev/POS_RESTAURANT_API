@@ -37,7 +37,7 @@ const corsOptions = {
 connectDB();
 
 // Initial express app
-const PORT = process.env.PORT;
+const PORT = 8080 || process.env.PORT;
 const app = express();
 
 // Initial Middlewares
