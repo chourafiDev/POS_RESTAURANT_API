@@ -4,6 +4,9 @@
   "description": "",
   "main": "server.js",
   "type": "module",
+  "engines": {
+    "node": "19.1.0"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"
