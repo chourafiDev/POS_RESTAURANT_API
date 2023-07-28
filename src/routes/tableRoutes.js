@@ -11,7 +11,7 @@ import { protect } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/", protect, createTable);
-router.get("/", protect, getAllTables);
+router.get("/", getAllTables);
 router.get("/:id", protect, getTableById);
 router.put("/:id", protect, updateTable);
 router.delete("/:id", protect, deleteTable);
