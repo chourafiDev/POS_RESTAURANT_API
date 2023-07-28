@@ -14,7 +14,7 @@ import productRoutes from "./routes/productRoutes.js";
 import tableRoutes from "./routes/tableRoutes.js";
 
 // Cors options
-const corsOptions = {
+const corsConfig = {
   allowedHeaders: [
     "Origin",
     "X-Requested-With",
@@ -24,7 +24,7 @@ const corsOptions = {
     "Authorization",
   ],
   credentials: true, // this allows to send back (to client) cookies
-  methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",
@@ -43,7 +43,8 @@ const app = express();
 // Initial Middlewares
 app.use(compression());
 app.use(cookieParser());
-app.use(cors(corsOptions));
+app.use(cors(corsConfig));
+app.options("", cors(corsConfig));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
