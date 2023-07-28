@@ -2,14 +2,14 @@
   "name": "api",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "./src/app.js",
   "type": "module",
   "engines": {
     "node": "18.x"
   },
   "scripts": {
-    "start": "vercel dev",
-    "dev": "nodemon app.js"
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +26,9 @@
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.3.0",
-    "npm": "^9.7.1"
+    "netlify-lambda": "^2.0.16",
+    "npm": "^9.7.1",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
