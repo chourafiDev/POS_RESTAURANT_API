@@ -12,7 +12,6 @@ import userRoutes from "./routes/userRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import tableRoutes from "./routes/tableRoutes.js";
-import serverless from "serverless-http";
 
 // Cors options
 const corsConfig = {
@@ -56,12 +55,6 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/tables", tableRoutes);
 
-app.use("/.netlify/functions/api", authRoutes);
-app.use("/.netlify/functions/api", userRoutes);
-app.use("/.netlify/functions/api", categoryRoutes);
-app.use("/.netlify/functions/api", productRoutes);
-app.use("/.netlify/functions/api/tables", tableRoutes);
-
 // Error Middlewares
 app.use(notFound);
 app.use(errorHandler);
@@ -73,5 +66,3 @@ const server = http.createServer(app);
 server.listen(PORT, () =>
   console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`)
 );
-
-export const handler = serverless(app);
