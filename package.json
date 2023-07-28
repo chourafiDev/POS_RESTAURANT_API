@@ -8,7 +8,7 @@
     "node": "18.x"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "vercel dev",
     "dev": "nodemon app.js"
   },
   "keywords": [],
