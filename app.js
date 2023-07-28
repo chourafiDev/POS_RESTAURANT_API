@@ -5,13 +5,13 @@ import cors from "cors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import { errorHandler, notFound } from "./src/middleware/errorMiddleware.js";
-import connectDB from "./src/config/config.js";
-import authRoutes from "./src/routes/authRoutes.js";
-import userRoutes from "./src/routes/userRoutes.js";
-import categoryRoutes from "./src/routes/categoryRoutes.js";
-import productRoutes from "./src/routes/productRoutes.js";
-import tableRoutes from "./src/routes/tableRoutes.js";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import connectDB from "./config/config.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import tableRoutes from "./routes/tableRoutes.js";
 
 // Cors options
 const corsOptions = {
