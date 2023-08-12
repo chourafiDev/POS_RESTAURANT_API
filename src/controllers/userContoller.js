@@ -76,6 +76,7 @@ const getUserById = asyncHandler(async (req, res) => {
 // @route PUT api/users/:id
 // @access Privet
 const updateUser = asyncHandler(async (req, res, next) => {
+  console.log("test update");
   const userId = req.params.id;
   const { firstName, lastName, email, address, phone, image } = req.body;
 
@@ -88,24 +89,24 @@ const updateUser = asyncHandler(async (req, res, next) => {
     user.phone = phone || user.phone;
 
     //Update user image
-    if (image !== null) {
-      const image_id = user.image.public_id;
+    // if (image !== null) {
+    //   const image_id = user.image.public_id;
 
-      if (image_id) {
-        //Delete previous image
-        await cloudinary.uploader.destroy(image_id);
-      }
+    //   if (image_id) {
+    //     //Delete previous image
+    //     await cloudinary.uploader.destroy(image_id);
+    //   }
 
-      //add new image
-      const result = await cloudinary.uploader.upload(image, {
-        folder: "pos_app/avatars",
-      });
+    //   //add new image
+    //   const result = await cloudinary.uploader.upload(image, {
+    //     folder: "pos_app/avatars",
+    //   });
 
-      user.image = {
-        public_id: result.public_id,
-        url: result.secure_url,
-      };
-    }
+    //   user.image = {
+    //     public_id: result.public_id,
+    //     url: result.secure_url,
+    //   };
+    // }
 
     await user.save();
 
