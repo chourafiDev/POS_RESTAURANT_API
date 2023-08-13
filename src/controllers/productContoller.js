@@ -4,6 +4,7 @@ import cloudinary from "../utils/cloudinary.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import History from "../models/historyModel.js";
 import mongoose from "mongoose";
+import APIFeatures from "../utils/APIFeatures.js";
 
 // @desc Create new product
 // @route POST api/products
@@ -48,7 +49,11 @@ const createProduct = asyncHandler(async (req, res, next) => {
 // @route GET api/products
 // @access Privet
 const getAllProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find();
+  const features = new APIFeatures(Product.find(), req.query)
+    .search()
+    .filterByCategory();
+
+  const products = await features.query;
 
   res.status(200).json(products);
 });
