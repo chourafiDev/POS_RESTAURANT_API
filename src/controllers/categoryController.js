@@ -64,6 +64,7 @@ const getAllCategories = asyncHandler(async (req, res) => {
       return {
         _id: category._id,
         name: category.name,
+        icon: category.icon,
         totalProducts,
       };
     })
