@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Category from "../models/categoryModel.js";
+import Products from "../models/productModel.js";
 import cloudinary from "../utils/cloudinary.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import History from "../models/historyModel.js";
@@ -51,9 +52,24 @@ const createCategory = asyncHandler(async (req, res, next) => {
 // @route GET api/categories
 // @access Privet
 const getAllCategories = asyncHandler(async (req, res) => {
+  // Get all categories
   const categories = await Category.find();
 
-  res.status(200).json(categories);
+  // Iterate through categories and count products for each category
+  const categoriesWithProductCounts = await Promise.all(
+    categories.map(async (category) => {
+      const totalProducts = await Products.countDocuments({
+        category: category._id,
+      });
+      return {
+        _id: category._id,
+        name: category.name,
+        totalProducts,
+      };
+    })
+  );
+
+  res.status(200).json({ categoriesWithProductCounts });
 });
 
 // @desc Get categorie by id
