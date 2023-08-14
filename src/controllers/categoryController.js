@@ -70,7 +70,7 @@ const getAllCategories = asyncHandler(async (req, res) => {
     })
   );
 
-  res.status(200).json({ categoriesWithProductCounts });
+  res.status(200).json(categoriesWithProductCounts);
 });
 
 // @desc Get categorie by id
