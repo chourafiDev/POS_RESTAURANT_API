@@ -4,7 +4,6 @@ import cloudinary from "../utils/cloudinary.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import History from "../models/historyModel.js";
 import mongoose from "mongoose";
-import APIFeatures from "../utils/APIFeatures.js";
 
 // @desc Create new product
 // @route POST api/products
@@ -49,11 +48,42 @@ const createProduct = asyncHandler(async (req, res, next) => {
 // @route GET api/products
 // @access Privet
 const getAllProducts = asyncHandler(async (req, res) => {
-  const features = new APIFeatures(Product.find(), req.query)
-    .search()
-    .filterByCategory();
+  const title = req.query.title;
+  let category = req.query.category;
 
-  const products = await features.query;
+  const aggregationPipeline = [];
+  let products = "";
+
+  if (category) {
+    aggregationPipeline.push({
+      $lookup: {
+        from: "categories", // categories collection
+        localField: "category",
+        foreignField: "_id",
+        as: "categoryDetails",
+      },
+    });
+    aggregationPipeline.push({
+      $match: {
+        "categoryDetails.name": { $regex: new RegExp(category, "i") }, // Filter by category name
+      },
+    });
+  }
+
+  if (title) {
+    aggregationPipeline.unshift({
+      $match: {
+        $text: { $search: title }, // Text search for product title
+      },
+    });
+  }
+
+  if (aggregationPipeline.length === 0) {
+    // No filters applied, fetch all data
+    products = await Product.find({});
+  } else {
+    products = await Product.aggregate(aggregationPipeline);
+  }
 
   res.status(200).json(products);
 });
