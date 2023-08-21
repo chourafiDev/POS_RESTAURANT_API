@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Table from "../models/tableModel.js";
+import History from "../models/historyModel.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 
 // @desc Create New Table
@@ -25,6 +26,13 @@ const createTable = asyncHandler(async (req, res, next) => {
   });
 
   if (newTable) {
+    // Create history for add new table
+    await History.create({
+      action: "Add",
+      description: `Add new table number ${newTable.number}`,
+      user: req.user._id,
+    });
+
     res.status(201).json({
       message: "Table created successfuly",
     });
@@ -77,6 +85,13 @@ const updateTable = asyncHandler(async (req, res, next) => {
 
     await table.save();
 
+    // Create history for update table
+    await History.create({
+      action: "Modification",
+      description: `Modify table number ${table.number}`,
+      user: req.user._id,
+    });
+
     res.status(200).json({ message: "Table updated Successfuly" });
   } else {
     return next(new ErrorHandler(`Table not found`, 404));
@@ -97,6 +112,13 @@ const deleteTable = asyncHandler(async (req, res, next) => {
 
   // Delete table
   await Table.findByIdAndRemove(tableId);
+
+  // Create history for delete table
+  await History.create({
+    action: "Delete",
+    description: `Delete table number ${table.number}`,
+    user: req.user._id,
+  });
 
   res.status(200).json({
     success: true,
