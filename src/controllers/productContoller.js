@@ -36,6 +36,13 @@ const createProduct = asyncHandler(async (req, res, next) => {
   });
 
   if (newProduct) {
+    //History for create new product
+    await History.create({
+      action: "Add",
+      description: `Add new product ${newProduct.title}`,
+      user: req.user._id,
+    });
+
     res.status(201).json({
       message: "Product created successfuly",
     });
@@ -137,6 +144,13 @@ const updateProduct = asyncHandler(async (req, res, next) => {
 
     await product.save();
 
+    //History for update product
+    await History.create({
+      action: "Modification",
+      description: `Modify product ${product.title}`,
+      user: req.user._id,
+    });
+
     res.status(200).json({ message: "Product Updated Successfuly" });
   } else {
     return next(new ErrorHandler(`Product not found`, 404));
@@ -166,8 +180,8 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
 
   //History for delete product
   await History.create({
-    action: "Deletion",
-    description: `Delete product (${product.title})`,
+    action: "Delete",
+    description: `Delete product ${product.title}`,
     user: req.user._id,
   });
 

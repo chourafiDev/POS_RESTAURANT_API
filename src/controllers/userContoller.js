@@ -45,6 +45,13 @@ const createUser = asyncHandler(async (req, res, next) => {
   });
 
   if (newUser) {
+    // Create history for add new user
+    await History.create({
+      action: "Add",
+      description: `Add new user ${newUser.firstName} ${newUser.lastName}`,
+      user: req.user._id,
+    });
+
     res.status(201).json({
       message: "User created successfuly",
     });
@@ -110,6 +117,13 @@ const updateUser = asyncHandler(async (req, res, next) => {
 
     await user.save();
 
+    // Create history for update user
+    await History.create({
+      action: "Modification",
+      description: `Modify user ${user.firstName} ${user.lastName}`,
+      user: req.user._id,
+    });
+
     res.status(200).json({ message: "User Updated Successfuly" });
   } else {
     return next(new ErrorHandler(`User not found`, 404));
@@ -137,10 +151,10 @@ const deleteUser = asyncHandler(async (req, res, next) => {
   // Delete user
   await User.findByIdAndRemove(userId);
 
-  //History delete user
+  // Create history for delete user
   await History.create({
-    action: "Deletion",
-    description: `Delete user (${user.firstName} ${user.lastName})`,
+    action: "Delete",
+    description: `Delete user ${user.firstName} ${user.lastName}`,
     user: req.user._id,
   });
 

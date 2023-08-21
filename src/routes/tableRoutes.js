@@ -10,10 +10,10 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", createTable);
-router.get("/", getAllTables);
-router.get("/:id", getTableById);
-router.put("/:id", updateTable);
-router.delete("/:id", deleteTable);
+router.post("/", protect, createTable);
+router.get("/", protect, getAllTables);
+router.get("/:id", protect, getTableById);
+router.put("/:id", protect, updateTable);
+router.delete("/:id", protect, deleteTable);
 
 export default router;
