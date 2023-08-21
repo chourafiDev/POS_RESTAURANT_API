@@ -12,6 +12,7 @@ import userRoutes from "./routes/userRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import tableRoutes from "./routes/tableRoutes.js";
+import historyRoutes from "./routes/historyRoutes.js";
 
 // Cors options
 const corsConfig = {
@@ -54,6 +55,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/tables", tableRoutes);
+app.use("/api/history", historyRoutes);
 
 // Error Middlewares
 app.use(notFound);
