@@ -102,7 +102,7 @@ const updateTable = asyncHandler(async (req, res, next) => {
 // @route DELETE api/tables/:id
 // @access Privet
 const deleteTable = asyncHandler(async (req, res, next) => {
-  // Check categorie if exists
+  // Check table if exists
   const tableId = req.params.id;
   const table = await Table.findOne({ _id: { $eq: tableId } });
 
