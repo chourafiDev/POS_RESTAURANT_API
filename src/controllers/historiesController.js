@@ -6,17 +6,15 @@ import ErrorHandler from "../utils/ErrorHandler.js";
 // @route GET api/history
 // @access Privet
 const getAllhistories = asyncHandler(async (req, res) => {
-  const startDate = req.body.startDate;
-  const endDate = req.body.endDate;
-  console.log("startDate", startDate);
-  console.log("endDate", endDate);
-
-  const endDateFull = new Date(endDate);
-  endDateFull.setHours(23, 59, 59, 999); // Set to the end of the day
+  const startDate = req.query.startDate || "";
+  const endDate = req.query.endDate || "";
 
   let generateQuery = {};
 
-  if (startDate && endDate) {
+  if (startDate != "" && endDate != "") {
+    const endDateFull = new Date(endDate);
+    endDateFull.setHours(23, 59, 59, 999); // Set to the end of the day
+
     generateQuery = {
       createdAt: { $gte: new Date(startDate), $lte: endDateFull },
     };
