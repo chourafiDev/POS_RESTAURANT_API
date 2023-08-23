@@ -5,6 +5,7 @@ import {
   deleteProduct,
   getProductById,
   updateProduct,
+  getMenu,
 } from "../controllers/productContoller.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -12,6 +13,7 @@ const router = express.Router();
 
 router.post("/", protect, createProduct);
 router.get("/", protect, getAllProducts);
+router.get("/menu", protect, getMenu);
 router.get("/:id", protect, getProductById);
 router.put("/:id", protect, updateProduct);
 router.delete("/:id", protect, deleteProduct);
