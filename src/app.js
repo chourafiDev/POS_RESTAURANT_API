@@ -8,6 +8,7 @@ import bodyParser from "body-parser";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/config.js";
 import authRoutes from "./routes/authRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
@@ -51,6 +52,7 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 // Define routes
 app.use("/api/auth", authRoutes);
+app.use("/api/profile", profileRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
