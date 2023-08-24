@@ -36,4 +36,42 @@ const updateCurrentUser = asyncHandler(async (req, res, next) => {
   }
 });
 
-export { updateCurrentUser, getCurrentUser };
+// @desc Update profile image
+// @route PUT api/profile/image-profile
+// @access Privet
+const updateProfileImage = asyncHandler(async (req, res, next) => {
+  const currentUserId = req.user.id;
+  const { image } = req.body;
+
+  const user = await User.findById(currentUserId);
+
+  if (user) {
+    //Update user image
+    if (image) {
+      const image_id = user.image.public_id;
+
+      if (image_id) {
+        //Delete previous image
+        await cloudinary.uploader.destroy(image_id);
+      }
+
+      //add new image
+      const result = await cloudinary.uploader.upload(image, {
+        folder: "pos_app/avatars",
+      });
+
+      user.image = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    }
+
+    await user.save();
+
+    res.status(200).json({ message: "Profile Image Updated Successfuly" });
+  } else {
+    return next(new ErrorHandler(`User not found`, 404));
+  }
+});
+
+export { updateCurrentUser, getCurrentUser, updateProfileImage };
