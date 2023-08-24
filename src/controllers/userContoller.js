@@ -83,7 +83,6 @@ const getUserById = asyncHandler(async (req, res) => {
 // @route PUT api/users/:id
 // @access Privet
 const updateUser = asyncHandler(async (req, res, next) => {
-  console.log("test update");
   const userId = req.params.id;
   const { firstName, lastName, email, address, phone, image } = req.body;
 
