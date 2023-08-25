@@ -74,4 +74,28 @@ const updateProfileImage = asyncHandler(async (req, res, next) => {
   }
 });
 
-export { updateCurrentUser, getCurrentUser, updateProfileImage };
+// @desc Update Profile Password
+// @route POST api/profile/update-password
+// @access Privet
+const updateProfilePassword = asyncHandler(async (req, res, next) => {
+  const currentUserId = req.user.id;
+  let { password } = req.body;
+
+  // Check if user already exists
+  const user = await User.findById(currentUserId);
+
+  if (user) {
+    user.password = password;
+  } else {
+    return next(
+      new ErrorHandler(`User with this email (${email}) already exists`, 404)
+    );
+  }
+});
+
+export {
+  updateCurrentUser,
+  getCurrentUser,
+  updateProfileImage,
+  updateProfilePassword,
+};
