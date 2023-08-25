@@ -49,4 +49,25 @@ const getUserProfile = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 });
 
+// @desc Get user profile
+// @route GET api/users/profile
+// @access Privet
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne(email);
+
+  if (!user) {
+    return next(
+      new ErrorHandler(`User with this email ${email} not found`, 401)
+    );
+  }
+
+  // Generate random reset token
+  const resetToken = user.createResetPasswordToken();
+
+  await user.save();
+
+  res.status(200).json(user);
+});
+
 export { login, logout, getUserProfile };
