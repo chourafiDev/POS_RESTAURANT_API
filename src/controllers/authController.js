@@ -54,7 +54,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @access Privet
 const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne(email);
+  const user = await User.findOne({ email });
 
   if (!user) {
     return next(
@@ -70,4 +70,4 @@ const forgotPassword = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 });
 
-export { login, logout, getUserProfile };
+export { login, logout, getUserProfile, forgotPassword };
