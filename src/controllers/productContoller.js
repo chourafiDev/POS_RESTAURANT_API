@@ -64,7 +64,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 // @route GET api/menu
 // @access Privet
 const getMenu = asyncHandler(async (req, res) => {
-  const title = req.params.title;
+  const title = req.query.title;
   let category = req.query.category;
 
   const aggregationPipeline = [];
