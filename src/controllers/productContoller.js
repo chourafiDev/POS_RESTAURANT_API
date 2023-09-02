@@ -66,9 +66,19 @@ const getAllProducts = asyncHandler(async (req, res) => {
 const getMenu = asyncHandler(async (req, res) => {
   const title = req.query.title;
   let category = req.query.category;
+  let minPrice = req.query.min_price;
+  let maxPrice = req.query.max_price;
 
   const aggregationPipeline = [];
   let products = "";
+
+  if (title) {
+    aggregationPipeline.unshift({
+      $match: {
+        $text: { $search: title }, // Text search for product title
+      },
+    });
+  }
 
   if (category) {
     aggregationPipeline.push({
@@ -86,10 +96,22 @@ const getMenu = asyncHandler(async (req, res) => {
     });
   }
 
-  if (title) {
-    aggregationPipeline.unshift({
+  if (minPrice) {
+    aggregationPipeline.push({
       $match: {
-        $text: { $search: title }, // Text search for product title
+        price: {
+          $gte: parseFloat(minPrice), // Convert to a numeric value if needed
+        },
+      },
+    });
+  }
+
+  if (maxPrice) {
+    aggregationPipeline.push({
+      $match: {
+        price: {
+          $lte: parseFloat(maxPrice), // Convert to a numeric value if needed
+        },
       },
     });
   }
