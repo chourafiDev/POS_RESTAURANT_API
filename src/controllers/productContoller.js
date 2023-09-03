@@ -64,7 +64,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 // @route GET api/menu
 // @access Privet
 const getMenu = asyncHandler(async (req, res) => {
-  const title = req.query.title;
+  const title = req.query.title || "all";
   let category = req.query.category;
   let minPrice = req.query.min_price;
   let maxPrice = req.query.max_price;
@@ -72,7 +72,7 @@ const getMenu = asyncHandler(async (req, res) => {
   const aggregationPipeline = [];
   let products = "";
 
-  if (title) {
+  if (title && title !== "all" && title !== "") {
     aggregationPipeline.unshift({
       $match: {
         $text: { $search: title }, // Text search for product title
