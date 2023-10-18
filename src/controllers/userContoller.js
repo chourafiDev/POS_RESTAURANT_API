@@ -69,6 +69,16 @@ const getAllUsers = asyncHandler(async (req, res) => {
   res.status(200).json(users);
 });
 
+// @desc Get current user
+// @route GET api/users/profile
+// @access Privet
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const user = await User.findById(_id).select("-password");
+
+  res.status(200).json(user);
+});
+
 // @desc Get user by id
 // @route GET api/users/:id
 // @access Privet
@@ -163,4 +173,11 @@ const deleteUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-export { createUser, updateUser, getAllUsers, deleteUser, getUserById };
+export {
+  createUser,
+  updateUser,
+  getAllUsers,
+  deleteUser,
+  getUserById,
+  getCurrentUser,
+};
