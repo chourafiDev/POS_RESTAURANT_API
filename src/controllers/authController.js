@@ -1,7 +1,9 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
+import senEmail from "../utils/email.js";
 import generateToken from "../utils/generateToken.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
+import crypto from "crypto";
 
 // @desc Create New User user/set token
 // @route POST api/auth/login
@@ -14,7 +16,7 @@ const login = asyncHandler(async (req, res, next) => {
 
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
-    res.status(201).json({
+    res.status(200).json({
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -39,20 +41,10 @@ const logout = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc Get user profile
-// @route GET api/users/profile
-// @access Privet
-const getUserProfile = asyncHandler(async (req, res) => {
-  const { _id } = req.user;
-  const user = await User.findById(_id).select("-password");
-
-  res.status(200).json(user);
-});
-
-// @desc Get user profile
-// @route GET api/users/profile
-// @access Privet
-const forgotPassword = asyncHandler(async (req, res) => {
+// @desc forgot password
+// @route POST api/auth/forgot-password
+// @access Public
+const forgotPassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
 
@@ -67,7 +59,66 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  res.status(200).json(user);
+  // Send email to reset password
+  const resetUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/api/auth/reset-password/${resetToken}`;
+
+  const message = `We have received a password reset request, Please use below link to reset your password\n\n${resetUrl}\n\nThis reset password link will be valid only for 1O minutes.`;
+
+  try {
+    await senEmail({
+      email: user.email,
+      subject: "Password change request received",
+      message: message,
+    });
+
+    res.status(200).json({
+      message: "Password reset link send to the user email",
+    });
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpires = undefined;
+    user.save();
+
+    return next(
+      new ErrorHandler(
+        `There was an error sending password reset email. Please try again later`,
+        500
+      )
+    );
+  }
 });
 
-export { login, logout, getUserProfile, forgotPassword };
+// @desc reset password
+// @route PATCH api/auth/reset-password
+// @access Public
+const resetPassword = asyncHandler(async (req, res, next) => {
+  const token = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: token,
+    passwordResetTokenExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new ErrorHandler(`Token is invalid or has expired`, 400));
+  }
+
+  // Reseting the user password
+  user.password = req.body.password;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+
+  user.save();
+
+  // Login the user
+  generateToken(res, user._id);
+
+  res.status(200).json({ status: "success" });
+});
+
+export { login, logout, forgotPassword, resetPassword };
