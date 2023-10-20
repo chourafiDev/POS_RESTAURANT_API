@@ -50,7 +50,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 
   if (!user) {
     return next(
-      new ErrorHandler(`User with this email ${email} not found`, 401)
+      new ErrorHandler(`User with this email ${email} not found`, 404)
     );
   }
 
@@ -60,34 +60,122 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   await user.save();
 
   // Send email to reset password
-  const resetUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/api/auth/reset-password/${resetToken}`;
+  const resetUrl = `http://localhost:3000/en/reset-password/${resetToken}?email=${email}`;
 
-  const message = `We have received a password reset request, Please use below link to reset your password\n\n${resetUrl}\n\nThis reset password link will be valid only for 1O minutes.`;
+  const htmlEmail = `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <!-- Include the Google Fonts link for Poppins -->
+      <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+      <style>
+          /* Reset some default styles */
+          body, p {
+              margin: 0;
+              padding: 0;
+              font-family: 'Poppins', sans-serif; /* Use Open Sans as the font family */
+          }
+  
+          /* Container for the email */
+          .email-container {
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 30px;
+              background-color: #ffffff;
+          }
+  
+          /* Header */
+          .header {
+              background-color: #f7b941;
+              color: #fff;
+              text-align: center;
+              padding: 10px;
+          }
 
-  try {
-    await senEmail({
-      email: user.email,
-      subject: "Password change request received",
-      message: message,
-    });
+  
+          /* Content area */
+          .content {
+              margin-bottom: 30px
+          }
 
-    res.status(200).json({
-      message: "Password reset link send to the user email",
-    });
-  } catch (error) {
-    user.passwordResetToken = undefined;
-    user.passwordResetTokenExpires = undefined;
-    user.save();
+          h5{
+            color: #073b4c;
+            font-size: 17px
+          }
+          p{
+            color: #264653;
+            margin-bottom: 16px;
+            font-size: 14px
+          }
+  
+          a {
+              background-color: #f7b941;
+              color: #264653;
+              padding: 8px 16px;
+              border-radius: 4px;
+              font-size: 13px;
+              text-decoration: none;
+          }
 
-    return next(
-      new ErrorHandler(
-        `There was an error sending password reset email. Please try again later`,
-        500
-      )
-    );
-  }
+          /* Footer */
+          .footer {
+              margin-top: 30px;
+              color: #CCD0DB;
+              text-align: center;
+              padding: 10px;
+              font-size: 13px
+          }
+      </style>
+  </head>
+  <body>
+      <div class="email-container">
+          <div class="header">
+              <img src="https://res.cloudinary.com/abdelmonaime/image/upload/v1697757215/pos_app/logo_sxxhot.png" width="110" alt="logo">
+          </div>
+          <div class="content">
+              <h5>Reset Password</h5>
+              <p>A password reset event has been triggered. The password reset window is limited to 10 minutes.</p>
+              <p>If you do not reset your password within two hours, you will need to submit a new request.</p>
+              <p>To complete the password reset process, click on the following button:</p>
+          </div>
+          
+          <a href=${resetUrl}>Reset password</a>
+           
+   
+          <div class="footer">
+               This message was sent from dissh.
+          </div>
+      </div>
+  </body>
+  </html>
+  `;
+
+  // try {
+  await senEmail({
+    email: user.email,
+    subject: "Password change request received",
+    // message: message,
+    html: htmlEmail,
+  });
+
+  res.status(200).json({
+    message: "Password reset link send to the user email",
+  });
+  // } catch (error) {
+  //   user.passwordResetToken = undefined;
+  //   user.passwordResetTokenExpires = undefined;
+  //   user.save();
+
+  //   return next(
+  //     new ErrorHandler(
+  //       `There was an error sending password reset email. Please try again later`,
+  //       500
+  //     )
+  //   );
+  // }
 });
 
 // @desc reset password
