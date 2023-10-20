@@ -153,29 +153,28 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   </html>
   `;
 
-  // try {
-  await senEmail({
-    email: user.email,
-    subject: "Password change request received",
-    // message: message,
-    html: htmlEmail,
-  });
+  try {
+    await senEmail({
+      email: user.email,
+      subject: "Password change request received",
+      html: htmlEmail,
+    });
 
-  res.status(200).json({
-    message: "Password reset link send to the user email",
-  });
-  // } catch (error) {
-  //   user.passwordResetToken = undefined;
-  //   user.passwordResetTokenExpires = undefined;
-  //   user.save();
+    res.status(200).json({
+      message: "Password reset link send to the user email",
+    });
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpires = undefined;
+    user.save();
 
-  //   return next(
-  //     new ErrorHandler(
-  //       `There was an error sending password reset email. Please try again later`,
-  //       500
-  //     )
-  //   );
-  // }
+    return next(
+      new ErrorHandler(
+        `There was an error sending password reset email. Please try again later`,
+        500
+      )
+    );
+  }
 });
 
 // @desc reset password
@@ -206,7 +205,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   // Login the user
   generateToken(res, user._id);
 
-  res.status(200).json({ status: "success" });
+  res.status(200).json({ message: "Password reset successfully" });
 });
 
 export { login, logout, forgotPassword, resetPassword };
