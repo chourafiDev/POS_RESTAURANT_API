@@ -30,7 +30,7 @@ const corsConfig = {
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://pos-restaurant-ui.vercel.app",
+    "https://pos-restaurant-plum.vercel.app",
   ],
   preflightContinue: false,
 };
