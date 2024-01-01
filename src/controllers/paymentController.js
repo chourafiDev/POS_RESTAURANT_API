@@ -2,23 +2,20 @@ import asyncHandler from "express-async-handler";
 import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_KEY);
 
-// @desc Stripe Checkout Session
-// @route GET api/history
+// @desc Stripe Create Checkout Session
+// @route POST api/payments/create-checkout-session
 // @access Privet
 const stripeCheckoutSession = asyncHandler(async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
-        name: room.title,
-        images: [
-          `${
-            room.photos.length >= 1
-              ? room.photos[0].url
-              : "https://res.cloudinary.com/abdelmonaime/image/upload/v1657917445/reservation_app/card-placeholder_grgdsv.png"
-          }`,
-        ],
-        amount: req.query.amount * 100,
-        currency: "usd",
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: "Egg Salad Croissant",
+          },
+          unit_amount: 2000,
+        },
         quantity: 1,
       },
     ],
