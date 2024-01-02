@@ -48,7 +48,14 @@ app.use(compression());
 app.use(cookieParser());
 app.use(cors(corsConfig));
 app.options("", cors(corsConfig));
-app.use(bodyParser.json({ limit: "10mb" }));
+app.use(
+  bodyParser.json({
+    limit: "10mb",
+    verify: (req, res, buffer) => {
+      req["rawBody"] = buffer;
+    },
+  })
+);
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 // Define routes
