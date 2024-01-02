@@ -25,6 +25,30 @@ const getAllhistories = asyncHandler(async (req, res) => {
   res.status(200).json(histories);
 });
 
+// @desc Get My history
+// @route GET api/my-history
+// @access Privet
+const getMyHistory = asyncHandler(async (req, res) => {
+  const { _id: userId } = req.user;
+  const startDate = req.query.startDate || "";
+  const endDate = req.query.endDate || "";
+
+  let generateQuery = {};
+
+  if (startDate != "" && endDate != "") {
+    const endDateFull = new Date(endDate);
+    endDateFull.setHours(23, 59, 59, 999); // Set to the end of the day
+
+    generateQuery = {
+      createdAt: { $gte: new Date(startDate), $lte: endDateFull },
+    };
+  }
+
+  const histories = await History.find({ user: userId, ...generateQuery });
+
+  res.status(200).json(histories);
+});
+
 // @desc Delete history
 // @route DELETE api/history
 // @access Privet
@@ -66,4 +90,4 @@ const deleteHistories = asyncHandler(async (req, res) => {
   });
 });
 
-export { getAllhistories, deleteHistory, deleteHistories };
+export { getAllhistories, getMyHistory, deleteHistory, deleteHistories };
