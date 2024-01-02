@@ -9,6 +9,8 @@ const stripeCheckoutSession = asyncHandler(async (req, res) => {
   const { cartItems, userId } = req.body;
 
   const items = cartItems.map((item) => {
+    const unitAmount = Math.round(item.price * 100);
+
     return {
       price_data: {
         currency: "usd",
@@ -16,7 +18,7 @@ const stripeCheckoutSession = asyncHandler(async (req, res) => {
           name: item.title,
           images: [item.image],
         },
-        unit_amount: item.price * 100,
+        unit_amount: unitAmount,
       },
       quantity: item.qty,
     };
