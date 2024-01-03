@@ -9,8 +9,9 @@ const stripe = new Stripe(process.env.STRIPE_KEY);
 // @route POST api/payments/create-checkout-session
 // @access Privet
 const stripeCheckoutSession = asyncHandler(async (req, res) => {
-  const { cartItems } = req.body;
+  const { cartItems, tableOrder } = req.body;
 
+  // Generate  ine_items
   const items = cartItems.map((item) => {
     const unitAmount = Math.round(item.price * 100);
 
@@ -33,8 +34,9 @@ const stripeCheckoutSession = asyncHandler(async (req, res) => {
     success_url: `${process.env.CLIENT_URL}/en/menu`,
     cancel_url: `${process.env.CLIENT_URL}/en/menu`,
     metadata: {
-      items: JSON.stringify(cartItems),
       userId: req.user._id.toString(),
+      items: JSON.stringify(cartItems),
+      tableOrder: JSON.stringify(tableOrder),
     },
   });
 
@@ -57,35 +59,40 @@ const webHookCheckout = asyncHandler(async (request, response) => {
       //Get session event data
       const session = event.data.object;
 
+      const tableOrder = JSON.parse(session.metadata.tableOrder);
+
       //Add new customer
       const customer = await Customer.create({
-        name: session.customer_details.name,
-        email: session.customer_details.email,
+        name: tableOrder.customer.fullname,
+        email: tableOrder.customer.email,
+        phone: tableOrder.customer.phone,
       });
 
       //Add new order
       const userId = session.metadata.userId;
       const customerId = customer?._id;
       const items = JSON.parse(session.metadata.items);
+
       const amountPaid = session.amount_total / 100;
       const payment_status = session.payment_status;
 
-      await Order.create({
+      const order = await Order.create({
         userId,
         customerId,
+        orderId: tableOrder.number,
+        table_order: {
+          guests: tableOrder.guests,
+          tables: tableOrder.tables,
+        },
         items,
         amountPaid,
         payment_status,
       });
 
       //History for pass new order
-      const totalItems = items.length;
-
       await History.create({
         action: "Pass order",
-        description: `Pass new order of ${totalItems} ${
-          totalItems > 1 ? "items" : "item"
-        }`,
+        description: `Pass order #${order.orderId}`,
         user: userId,
       });
 
