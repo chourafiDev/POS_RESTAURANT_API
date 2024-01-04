@@ -45,7 +45,15 @@ const createTable = asyncHandler(async (req, res, next) => {
 // @route GET api/tables
 // @access Privet
 const getAllTables = asyncHandler(async (req, res) => {
-  const tables = await Table.find();
+  const status = req.query.status || "";
+
+  let generateQuery = {};
+
+  if (status != "") {
+    generateQuery = { status };
+  }
+
+  const tables = await Table.find(generateQuery);
 
   res.status(200).json(tables);
 });
