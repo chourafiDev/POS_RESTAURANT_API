@@ -24,7 +24,8 @@ const getOrders = asyncHandler(async (req, res) => {
     .populate({
       path: "customerId",
       select: "name email phone -_id",
-    });
+    })
+    .sort({ createdAt: -1 });
 
   res.status(200).json(orders);
 });

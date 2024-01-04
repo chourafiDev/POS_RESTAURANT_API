@@ -20,7 +20,7 @@ const getAllhistories = asyncHandler(async (req, res) => {
     };
   }
 
-  const histories = await History.find(generateQuery);
+  const histories = await History.find(generateQuery).sort({ createdAt: -1 });
 
   res.status(200).json(histories);
 });
@@ -44,7 +44,9 @@ const getMyHistory = asyncHandler(async (req, res) => {
     };
   }
 
-  const histories = await History.find({ user: userId, ...generateQuery });
+  const histories = await History.find({ user: userId, ...generateQuery }).sort(
+    { createdAt: -1 }
+  );
 
   res.status(200).json(histories);
 });
