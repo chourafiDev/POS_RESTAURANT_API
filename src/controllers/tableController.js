@@ -49,7 +49,7 @@ const getAllTables = asyncHandler(async (req, res) => {
 
   let generateQuery = {};
 
-  if (status != "") {
+  if (status !== "" && status != "all") {
     generateQuery = { status };
   }
 
