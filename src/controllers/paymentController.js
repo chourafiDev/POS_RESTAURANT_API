@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_KEY);
 // @route POST api/payments/create-checkout-session
 // @access Privet
 const stripeCheckoutSession = asyncHandler(async (req, res) => {
-  const { cartItems, tableOrder } = req.body;
+  const { cartItems, tableOrder, lang } = req.body;
 
   // Generate  ine_items
   const items = cartItems.map((item) => {
@@ -31,8 +31,8 @@ const stripeCheckoutSession = asyncHandler(async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     line_items: items,
     mode: "payment",
-    success_url: `${process.env.CLIENT_URL}/en/menu`,
-    cancel_url: `${process.env.CLIENT_URL}/en/menu`,
+    success_url: `${process.env.CLIENT_URL}/${lang}/menu`,
+    cancel_url: `${process.env.CLIENT_URL}/${lang}/menu`,
     metadata: {
       userId: req.user._id.toString(),
       items: JSON.stringify(cartItems),
